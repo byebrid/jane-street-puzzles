@@ -517,3 +517,14 @@ Upper bound of   90: min sum = 71: (0, 7, 20, 44)    [69.73 seconds]
   - Then, we could subtract 1 from every corner. This would yield the exact same set of corners in the next iteration, meaning we could get the exacy same value of $f$ overall.
   - However, we will have also reduced the sum of the initial corners! Therefore, the final solution will always have a 0 in it!
 - This does reduce the sample space a lot, but can't be the end of the story.
+
+
+## Testing threshold
+- Want to examine the jump from:
+  - Upper bound of 12; Max $f$ of 10; Sum of 18; (0, 2, 5, 11)
+  - Upper bound of 13: Max $f$ of 11; Sum of 21; (0, 2, 6, 13)
+- For 12, imagine we tried to set the last corner to be 12.
+  - $(0, b, c, 12)$
+    - Next would be $(b, c-b, 12-c, 12)$
+    - Then $(c-2b, 12-2c+b, c, 12-b)$
+  - Why is this a bad idea?

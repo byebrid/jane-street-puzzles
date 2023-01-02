@@ -1,29 +1,24 @@
 from itertools import product
 from time import time
+import numpy as np
+
+def f(a, b, c, d):
+    steps = 0
+    while (a, b, c, d) != (0, 0, 0, 0):
+        print(a, b, c, d)
+        w = abs(a - b)
+        x = abs(b - c)
+        y = abs(c - d)
+        z = abs(d - a)
+        a, b, c, d = w, x, y, z
+        steps += 1
+    
+    # Increment to include the final (0, 0, 0, 0) state
+    steps += 1
+    return steps
 
 def find_min_sum_max_f(upper_bound: int, print_answers: bool = False):
     start = time()
-    
-    def f(a, b, c, d):
-        steps = 0
-        while (a, b, c, d) != (0, 0, 0, 0):
-            w = abs(a - b)
-            x = abs(b - c)
-            y = abs(c - d)
-            z = abs(d - a)
-            a, b, c, d = w, x, y, z
-            steps += 1
-        
-        # Increment to include the final (0, 0, 0, 0) state
-        steps += 1
-        return steps
-
-        # w = abs(a - b)
-        # x = abs(b - c)
-        # y = abs(c - d)
-        # z = abs(d - a)
-        # return 1 + f(w, x, y, z)
-
 
     total_iterations = (upper_bound) ** 4
     answers = []
@@ -71,6 +66,43 @@ def find_min_sum_max_f(upper_bound: int, print_answers: bool = False):
     print(f"Upper bound of {upper_bound:>4}: min sum = {min_sum}: {min_sol}    [{duration_seconds:.2f} seconds]")
 
 
-for upper_bound in range(1, 91):
-    find_min_sum_max_f(upper_bound, print_answers=False)
-    print()
+def f2(l):
+    # return np.ndarray([
+    #     l[1] - l[0],
+    #     l[2] - l[1],
+    #     l[3] - l[2],
+    #     l[0] - l[3]
+    # ])
+
+    l_shifted = np.roll(l, shift=-1, axis=0)
+    # l[-1] *= -1
+    # l_shifted[-1] *= -1
+    next_l = l_shifted - l
+    next_l[-1] *= -1
+    return next_l
+
+
+if __name__ == "__main__":
+    # for upper_bound in range(1, 91):
+    #     find_min_sum_max_f(upper_bound, print_answers=False)
+    #     print()
+
+    np.set_printoptions(precision=3)
+    l = np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    start = (0, 7, 20, 44) 
+    bcd = np.array(start[1:]).transpose()
+    wanted_y = np.array([100, 100, 100]).transpose()
+    for i in range(100):
+        l = f2(l)
+        # print(f"\n{i=}")
+        # print(l)
+        l_only_positive = l[[0,2,3]]
+        required_start = np.linalg.solve(l_only_positive, wanted_y).astype(int)
+        if all(np.matmul(l_only_positive, required_start) == wanted_y):
+            print(f"YES! {i=}")
+            # print(required_start)
+
+        # print(np.matmul(l, bcd))
+
+
+    # f(*start)
