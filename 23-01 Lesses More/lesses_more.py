@@ -5,14 +5,24 @@ def find_min_sum_max_f(upper_bound: int, print_answers: bool = False):
     start = time()
     
     def f(a, b, c, d):
-        if a == b == c == d == 0:
-            return 1
+        steps = 0
+        while (a, b, c, d) != (0, 0, 0, 0):
+            w = abs(a - b)
+            x = abs(b - c)
+            y = abs(c - d)
+            z = abs(d - a)
+            a, b, c, d = w, x, y, z
+            steps += 1
+        
+        # Increment to include the final (0, 0, 0, 0) state
+        steps += 1
+        return steps
 
-        w = abs(a - b)
-        x = abs(b - c)
-        y = abs(c - d)
-        z = abs(d - a)
-        return 1 + f(w, x, y, z)
+        # w = abs(a - b)
+        # x = abs(b - c)
+        # y = abs(c - d)
+        # z = abs(d - a)
+        # return 1 + f(w, x, y, z)
 
 
     total_iterations = (upper_bound) ** 4
@@ -61,6 +71,6 @@ def find_min_sum_max_f(upper_bound: int, print_answers: bool = False):
     print(f"Upper bound of {upper_bound:>4}: min sum = {min_sum}: {min_sol}    [{duration_seconds:.2f} seconds]")
 
 
-for upper_bound in range(40, 45):
-    find_min_sum_max_f(upper_bound, print_answers=True)
+for upper_bound in range(1, 91):
+    find_min_sum_max_f(upper_bound, print_answers=False)
     print()
