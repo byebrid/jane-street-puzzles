@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Knight Moves 5 playground</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="board">
+        <div class="row">
+            <button class="cell" data-row="0" data-col="0"></button>
+            <button class="cell" data-row="0" data-col="1"></button>
+            <button class="cell" data-row="0" data-col="2"></button>
+            <button class="cell" data-row="0" data-col="3"></button>
+        </div>
+        <div class="row">
+            <button class="cell" data-row="1" data-col="0"></button>
+            <button class="cell" data-row="1" data-col="1"></button>
+            <button class="cell" data-row="1" data-col="2"></button>
+            <button class="cell" data-row="1" data-col="3"></button>
+        </div>
+        <div class="row">
+            <button class="cell" data-row="2" data-col="0"></button>
+            <button class="cell" data-row="2" data-col="1"></button>
+            <button class="cell" data-row="2" data-col="2"></button>
+            <button class="cell" data-row="2" data-col="3"></button>
+        </div>
+        <div class="row">
+            <button class="cell" data-row="3" data-col="0"></button>
+            <button class="cell" data-row="3" data-col="1"></button>
+            <button class="cell" data-row="3" data-col="2"></button>
+            <button class="cell" data-row="3" data-col="3"></button>
+        </div>
+    </div>
+    <div id="timeDiv">
+        Time: <span id="time">0</span>
+    </div>
+    <button class="sleep">Sleep</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.1.0/math.js"></script>
+    <script src="./index.js" defer></script>
+</body>

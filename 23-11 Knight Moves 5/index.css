@@ -1,0 +1,50 @@
+body {
+    background-color: darkgray;
+}
+
+.board {
+    background-color: black;
+    width: fit-content;
+    padding: 5px;
+}
+
+.cell {
+    /* aspect-ratio: 1; */
+    vertical-align: top;
+    width: 150px;
+    height: 150px;
+    font-size: 3em;
+    overflow-x: hidden;
+    white-space: nowrap;
+}
+
+/* .cell[data-current="true"] {
+    border: 8px solid green;
+} */
+
+.cell.selected {
+    border: 8px solid green;
+}
+
+/* .cell[data-reachable="true"] {
+    border: 8px solid blue;
+} */
+
+.cell.reachable {
+    border: 8px solid blue;
+}
+
+.row:not(:first-child) {
+    margin-top: 5px;
+}
+
+#timeDiv {
+    background-color: white;
+    padding: 5px;
+    width: fit-content;
+    font-size: 2em;
+}
+
+.sleep {
+    font-size: 2em;
+}
