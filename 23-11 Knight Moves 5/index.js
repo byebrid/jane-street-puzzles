@@ -102,33 +102,57 @@ class Board {
         return [row, col];
     }
 
-    sleep() {
-        const matchingCells = [];
-        const [currRow, currCol] = this.currentPosition;
+    /**
+     * Returns list of cells with same height as that of given position, as well
+     * as whether the opposite cell matched altitude. Note that the opposite cell
+     * will _never_ be returned in the list since this method is intended to find
+     * cells that _sink_.
+     * 
+     * @param {*} position Position to compare heights with
+     */
+    findMatchingHeights(position) {
+        const [currRow, currCol] = position;
         const currAlt = this._grid[currRow][currCol].altitude;
-
+        const [oppRow, oppCol] = this.getOppositePosition(position);
+        
+        const matchingCells = [];0
+        let oppositeMatched = false;
         for (let row of this._grid) {
             for (let cell of row) {
                 if (cell.altitude.equals(currAlt)) {
-                    matchingCells.push(cell);
+                    if (cell.row == oppRow && cell.col == oppCol) {
+                        oppositeMatched = true;
+                    } else {
+                        matchingCells.push(cell);
+                    }
                 }
             }
         }
 
-        const n = matchingCells.length;
-        if (n == 0) {
-            throw new Error(`Found no cells with altitude ${currAlt.toFraction()}`);
-        }
+        return {
+            "matchingCells": matchingCells,
+            "oppositeMatched": oppositeMatched
+        };
+    }
 
+    sleep() {
+        const {matchingCells, oppositeMatched} = this.findMatchingHeights(this.currentPosition);
+        console.log(matchingCells);
+        console.log(oppositeMatched);
+        const n = matchingCells.length;
         const sinkRate = math.fraction(1, n);
+        
+        // Sink all non-opposite cells with same altitude
         for (let cell of matchingCells) {
             cell.altitude = cell.altitude.sub(sinkRate);
         }
 
-        // Now elevate opposite
-        const [oppRow, oppCol] = this.getOppositePosition(this.currentPosition);
-        const oppCell = this._grid[oppRow][oppCol];
-        oppCell.altitude = oppCell.altitude.add(sinkRate);
+        // Elevate opposite cell unless it was same altitude
+        if (!oppositeMatched) {
+            const [oppRow, oppCol] = this.getOppositePosition(this.currentPosition);
+            const oppCell = this._grid[oppRow][oppCol];
+            oppCell.altitude = oppCell.altitude.add(sinkRate);
+        }
 
         this.clearReachable();
         this.allowedMoves();
@@ -261,275 +285,3 @@ const board = new Board([
     [3, 0]
     );
 document.querySelector(".sleep").onclick = () => board.sleep();
-
-
-
-// // Initialise board
-// // const buttons = [];
-// for (let rowNum=0; rowNum < HEIGHT; rowNum++) {
-//     // buttons.push([]);
-//     for (let colNum=0; colNum < WIDTH; colNum++) {
-//         const fraction = math.fraction(board[rowNum][colNum]);
-//         setAltitude([rowNum, colNum], fraction)
-//         setButtonPosition([rowNum, colNum])
-//         // buttons[buttons.length - 1].push(button);
-//     }
-// }
-
-// function setAltitude(position, fraction) {
-//     const button = positionToButton(position);
-
-//     button.dataset.fractionN = fraction.n;
-//     button.dataset.fractionD = fraction.d;
-//     button.dataset.fractionS = fraction.s;
-//     button.innerText = fraction.toFraction(true);
-// }
-
-// function setButtonPosition(position) {
-//     const button = positionToButton(position);
-//     const [row, col] = position;
-//     button.dataset.row = row;
-//     button.dataset.col = col;
-// }
-
-// function moveTo(newPosition) {
-//     currentPosition = newPosition;
-//     const button = positionToButton(currentPosition);
-//     button.dataset.current = true;
-//     checkState();
-// }
-
-// function getAltitude(position) {
-//     const button = positionToButton(position);
-
-//     let n = parseInt(button.dataset.fractionN);
-//     let d = parseInt(button.dataset.fractionD);
-//     let s = parseInt(button.dataset.fractionS);
-
-//     let altitude = math.fraction(n, d);
-//     if (s == '-1') {
-//         altitude = altitude.mul(-1);
-//     }
-
-//     return altitude;
-// }
-
-
-// checkState();
-
-
-
-// function positionToButton(position) {
-//     const [rowNum, colNum] = position;
-//     const rows = document.querySelectorAll("div.row");
-//     const row = rows[rowNum];
-//     const cols = row.querySelectorAll("button");
-//     return cols[colNum];
-// }
-
-// function positionTo1DIndex(position) {
-//     const [row, col] = position;
-//     return row * WIDTH + col;
-// }
-
-
-// function highlightCurrentPosition(position) {
-//     const button = positionToButton(position);
-//     button.dataset.current = true;
-// }
-
-// function getOppositePosition(position) {
-//     const [row, col] = position;
-//     const oppRow = HEIGHT - row - 1;
-//     const oppCol = WIDTH - col - 1;
-//     return [oppRow, oppCol];
-// }
-
-// function getAllButtons() {
-//     const buttons = [];
-//     for (let rowNum=0; rowNum<HEIGHT; rowNum++) {
-//         for (let colNum=0; colNum<WIDTH; colNum++) {
-//             let button = positionToButton([rowNum, colNum]);
-//             buttons.push(button);
-//         }
-//     }
-    
-//     return buttons;
-// }
-
-// function clearStates() {
-//     const buttons = getAllButtons();
-//     for (let button of buttons) {
-//         button.dataset.reachable = false;
-//         button.dataset.current = false;
-//         button.onclick = null;
-//     }
-// }
-
-// function sleepBoard() {
-//     const buttons = getAllButtons();
-//     const currentButton = buttons[positionTo1DIndex(currentPosition)];
-//     const currentAltitude = getAltitude(currentPosition);
-//     const oppPosition = getOppositePosition(currentPosition)
-//     // const currentAltitude = parseFloat(currentButton.innerText);
-    
-//     let matchingPositions = [];
-//     let oppositeDidMatch = false;
-//     for (let rowNum=0; rowNum<HEIGHT; rowNum++) {
-//         for (let colNum=0; colNum<WIDTH; colNum++) {
-//             const position = [rowNum, colNum]
-//             const altitudeMatch = currentAltitude.equals(getAltitude(position));
-//             const isOpposite = arrayEquals(position, oppPosition);
-//             if (altitudeMatch && !isOpposite) {
-//                 if (isOpposite) {
-//                     oppositeDidMatch = true;
-//                 } else {
-//                     matchingPositions.push(position);
-//                 }
-//             }
-//         }
-//     }
-//     console.log(matchingPositions);
-
-//     const n = matchingPositions.length;
-//     // Should never happen since button should always match itself!
-//     if (n == 0) {
-//         throw new Error(`Found no button matching altitude '${currentAltitude}' from position ${currentPosition}`);
-//     }
-//     const sinkRate = math.fraction(1, n);
-
-//     // Sink all cells with same altitude
-//     for (let position of matchingPositions) {
-//         const currAlt = getAltitude(position);
-//         const newAlt = currAlt.sub(sinkRate);
-//         setAltitude(position, newAlt)
-//     }
-
-//     // Rise diametrically opposite cell (if it wasn't same altitude)
-//     if (!oppositeDidMatch) {
-//         const currAlt = getAltitude(oppPosition);
-//         const newAlt = currAlt.add(sinkRate);
-//         setAltitude(oppPosition, newAlt);
-//     }
-
-//     incrementTime();
-//     checkState();
-// }
-
-// function checkState() {
-//     clearStates();
-//     highlightCurrentPosition(currentPosition);
-    
-//     const currentAlt = getAltitude(currentPosition);
-//     const [row, col] = currentPosition;
-    
-//     // Find all reachable cells
-//     let reachableButtons = [];
-
-//     const validCombos = [[0, 1, 2], [0, 1, -2], [0, -1, 2], [0, -1, -2]];
-//     for (let combo of validCombos) {
-//         for (let perm of permutator(combo)) {
-//             const [rowDiff, colDiff, altDiff] = perm;
-//             const newRow = row + rowDiff;
-//             const newCol = col + colDiff;
-//             if (newRow < 0 || newRow >= HEIGHT || newCol < 0 || newCol >= WIDTH) {
-//                 continue;
-//             }
-
-//             const newAlt = currentAlt + altDiff;
-//             if (getAltitude([newRow, newCol]) == newAlt) {
-//                 reachableButtons.push(positionToButton([newRow, newCol]));
-//             }
-//         }
-//     }
-
-//     highlightReachable(reachableButtons);
-
-//     return reachableButtons;
-// }
-
-// function incrementTime() {
-//     const span = document.querySelector("#time");
-//     let newTime = parseInt(span.innerText) + 1;
-//     span.innerText = newTime.toString();
-// }
-
-// function highlightReachable(buttons) {
-//     for (let button of buttons) {
-//         button.dataset.reachable = true;
-//         button.onclick = () => {
-//             console.log("CLICKED!");
-//             moveTo([button.dataset.row, button.dataset.col]);
-//         };
-//     }
-// }
-
-
-// /**
-//  * Generate all combinations of an array. Taken from https://stackoverflow.com/a/61418166
-//  * @param {Array} sourceArray - Array of input elements.
-//  * @param {number} comboLength - Desired length of combinations.
-//  * @return {Array} Array of combination arrays.
-//  */
-// function generateCombinations(sourceArray, comboLength) {
-//     const sourceLength = sourceArray.length;
-//     if (comboLength > sourceLength) return [];
-  
-//     const combos = []; // Stores valid combinations as they are generated.
-  
-//     // Accepts a partial combination, an index into sourceArray, 
-//     // and the number of elements required to be added to create a full-length combination.
-//     // Called recursively to build combinations, adding subsequent elements at each call depth.
-//     const makeNextCombos = (workingCombo, currentIndex, remainingCount) => {
-//       const oneAwayFromComboLength = remainingCount == 1;
-  
-//       // For each element that remaines to be added to the working combination.
-//       for (let sourceIndex = currentIndex; sourceIndex < sourceLength; sourceIndex++) {
-//         // Get next (possibly partial) combination.
-//         const next = [ ...workingCombo, sourceArray[sourceIndex] ];
-  
-//         if (oneAwayFromComboLength) {
-//           // Combo of right length found, save it.
-//           combos.push(next);
-//         }
-//         else {
-//           // Otherwise go deeper to add more elements to the current partial combination.
-//           makeNextCombos(next, sourceIndex + 1, remainingCount - 1);
-//         }
-//           }
-//     }
-  
-//     makeNextCombos([], 0, comboLength);
-//     return combos;
-// }
-  
-
-// // Taken from https://stackoverflow.com/a/20871714
-// function permutator(inputArr) {
-//     let result = [];
-
-//     const permute = (arr, m = []) => {
-//         if (arr.length === 0) {
-//         result.push(m)
-//         } else {
-//         for (let i = 0; i < arr.length; i++) {
-//             let curr = arr.slice();
-//             let next = curr.splice(i, 1);
-//             permute(curr.slice(), m.concat(next))
-//         }
-//         }
-//     }
-
-//     permute(inputArr)
-
-//     return result;
-// }
-
-// // Taken from https://flexiple.com/javascript/javascript-array-equality
-// // Why is this not built in to JS?
-// function arrayEquals(a, b) {
-//     return Array.isArray(a) &&
-//         Array.isArray(b) &&
-//         a.length === b.length &&
-//         a.every((val, index) => val === b[index]);
-// }

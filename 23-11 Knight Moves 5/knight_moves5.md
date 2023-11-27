@@ -174,35 +174,3 @@ And so on. In fact, I found that more than half of the board was immediately rea
 ![Alt text](image-4.png)
 
 I'm going to call these connected regions of cells "islands", which I guess is what you would call a "connected component" in graph theory class.
-
-## Getting stuck at clunky fractions
-Sometimes you may end up in a state like this,
-
-![Alt text](image-5.png)
-
-Here we have 4 cells of height $5\, \frac{11}{20}$. In this state, we could only possibly jump to a nearby cell with a shared fractional component of $\frac{11}{20}$, of which there are none. So we are forced to sleep, but the sinking rate is $\frac{1}{4}$, meaning our fractional components are now stuck in $\left\{ \frac{1}{20}, \frac{6}{20}, \frac{11}{20}, \frac{16}{20} \right\}$. Since no other cells on the board already have such a fractional component, we are no truly stuck and have no hope of getting out of this situation.
-
-### How did we end up here?
-Say we start at this 9 here.
-
-![Alt text](image-6.png)
-
-If we sleep, the 9's will sink at a rate of $\frac{1}{2}$. They will simply both do this until they reach the next integer, 8. However, the opposite cell (here it's 5) will also rise at this same rate. It too will become integer again at the same time as the 9's.
-
-Now we have 3 8's and the same process repeats.
-
-![Alt text](image-7.png)
-
-Here's where it gets interesting. We now have 4 7's, so they sink at a rate of $\frac{1}{4}$.
-
-![Alt text](image-8.png)
-
-But now, the opposite cell, a 6, will meet them in the middle! I.e. after 2 sleeps, the board looks like this.
-
-![Alt text](image-9.png)
-
-So the _sinking rate changes before they have sunk back down to an integer_! The sinking rate has gone from $\frac{1}{4}$ to $\frac{1}{5}$, so all of our sinking cells now go down to an awkward fraction, $\frac{3}{10}$!
-
-![Alt text](image-10.png)
-
-The sinking rate is now back to $\frac{1}{4}$, but the damage has been done. Since $\frac{3}{10}$ is _not_ an integer multiple of $\frac{1}{4}$, we are now permanently stuck in this fractional limbo!
