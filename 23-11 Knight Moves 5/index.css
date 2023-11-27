@@ -34,6 +34,15 @@ body {
     border: 8px solid blue;
 }
 
+.cell:hover:enabled {
+    background-color: #E5E4E5;
+}
+
+.cell:disabled {
+    background-color: #EFEFEF;
+    color: black;
+}
+
 .row:not(:first-child) {
     margin-top: 5px;
 }

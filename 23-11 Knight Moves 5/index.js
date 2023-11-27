@@ -210,6 +210,7 @@ class Cell {
         this.isReachable = true;
         this._button.classList.add("reachable");
         this._button.onclick = callback;
+        this._button.disabled = null;
         console.log(callback);
         console.log(this._button);
         console.log(this._button.classList);
@@ -219,6 +220,7 @@ class Cell {
         this.isReachable = false;
         this._button.classList.remove("reachable");
         this._button.onclick = null;
+        this._button.disabled = true;
     }
 
     get altitude() {
